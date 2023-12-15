@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.1/css/all.min.css">
+    
+    <title>Canvas Drawing</title>
+</head>
+
+<style>
+    body {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        height: 100vh;
+        margin: 0;
+        flex-direction: column;
+    }
+
+    canvas {
+        border: 1px solid #000;
+    }
+    canvas:hover{
+        cursor: crosshair;
+    }
+
+    #controls {
+        text-align: center;
+        margin-top: 20px;
+    }
+
+    #controls button {
+        margin: 3px;
+        padding: 10px;
+        
+    }
+</style>
+<body>
+    <canvas id="myCanvas" width="800" height="600"></canvas>
+    <div id="controls">
+        
+        <button onclick="clearCanvas()"><i class="fas fa-file"></i></button>
+        
+        <button onclick="setEraser()"><i class="fas fa-eraser"></i></button>
+        <button onclick="setBrushColor('blue')" style="background-color: blue; color: white;"><i class="fas fa-paint-brush"></i></button>
+        <button onclick="setBrushColor('black')" style="background-color: black; color: white;"><i class="fas fa-paint-brush"></i></button>
+        <button onclick="setBrushColor('red')" style="background-color: red; color: white;"><i class="fas fa-paint-brush"></i></button>
+        <button onclick="setBrushColor('yellow')" style="background-color: yellow;"><i class="fas fa-paint-brush"></i></button>
+        
+        
+        <br>
+        <label for="brushSize">Brush Size:</label>
+        <input type="range" id="brushSize" min="2" max="15" value="3">
+        <span id="brushSizeValue">3</span>
+    </div>
+
+    <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.1/js/all.min.js"></script>
+    <script>
+        const canvas = document.getElementById('myCanvas');
+        const ctx = canvas.getContext('2d');
+        let isDrawing = false;
+
+        function setBrushColor(color) {
+            ctx.strokeStyle = color;
+        }
+
+        function setEraser() {
+            ctx.strokeStyle = '#fff'; // white color for eraser
+        }
+
+        function clearCanvas() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+        }
+
+        function startDrawing(e) {
+            isDrawing = true;
+            draw(e);
+        }
+
+        function stopDrawing() {
+            isDrawing = false;
+            ctx.beginPath(); // start a new path for the next stroke
+        }
+
+        function draw(e) {
+            if (!isDrawing) return;
+
+            ctx.lineWidth = document.getElementById('brushSize').value;
+            ctx.lineCap = 'round';
+
+            ctx.lineTo(e.clientX - canvas.offsetLeft, e.clientY - canvas.offsetTop);
+            ctx.stroke();
+            ctx.beginPath();
+            ctx.moveTo(e.clientX - canvas.offsetLeft, e.clientY - canvas.offsetTop);
+
+            // Update the slider value display
+            document.getElementById('brushSizeValue').innerText = ctx.lineWidth;
+        }
+
+        // Update the slider number while sliding
+        document.getElementById('brushSize').addEventListener('input', function() {
+            document.getElementById('brushSizeValue').innerText = this.value;
+        });
+
+        canvas.addEventListener('mousedown', startDrawing);
+        canvas.addEventListener('mousemove', draw);
+        canvas.addEventListener('mouseup', stopDrawing);
+        canvas.addEventListener('mouseout', stopDrawing);
+    </script>
+</body>
+</html>
